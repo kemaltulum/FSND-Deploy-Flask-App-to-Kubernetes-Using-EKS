@@ -68,4 +68,15 @@ echo '{ "Version": "2012-10-17", "Statement": [ { "Effect": "Allow", "Action": [
       - system:masters
 
   kubectl patch configmap/aws-auth -n kube-system --patch "$(cat /tmp/aws-auth-patch.yml)"
+
+
+aws ssm put-parameter --name JWT_SECRET --value "YourJWTSecret" --type SecureString
+
+
+kubectl get services simple-jwt-api -o wide
+
+http://aa52388250eb746468e5513a58ab3935-2105079550.eu-central-1.elb.amazonaws.com
+
+export TOKEN=`curl -d '{"email":"test@test.com","password":"test"}' -H "Content-Type: application/json" -X POST http://aa52388250eb746468e5513a58ab3935-2105079550.eu-central-1.elb.amazonaws.com/auth  | jq -r '.token'`
+curl --request GET 'aa52388250eb746468e5513a58ab3935-2105079550.eu-central-1.elb.amazonaws.com/contents' -H "Authorization: Bearer ${TOKEN}" | jq 
 ```
