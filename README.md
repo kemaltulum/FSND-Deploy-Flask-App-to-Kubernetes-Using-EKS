@@ -43,7 +43,29 @@ export TOKEN=`curl -d '{"email":"test@test.com","password":"password123"}' -H "C
 
 echo $TOKEN
 
-curl --request GET 'http://127.0.0.1:8080/contents' -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1OTEzOTEzODAsIm5iZiI6MTU5MDE4MTc4MCwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIn0.QJ2SYt2_DyZaJ7H-CsLLtu02UQHAuJ4K-bQPIiYuYUA" | jq .
+curl --request GET 'http://127.0.0.1:8080/contents' -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1OTEzOTIzOTYsIm5iZiI6MTU5MDE4Mjc5NiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIn0.5S5cXZ8fY2qyUiJ2gKQJE1B5PfDOCU29A9KBZOF40Zg" | jq .
 
 sudo docker run -p 80:8080 --env-file=app/env_file jwt-api-test
+
+
+ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+
+
+TRUST="{ \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Principal\": { \"AWS\": \"arn:aws:iam::${ACCOUNT_ID}:root\" }, \"Action\": \"sts:AssumeRole\" } ] }"
+
+aws iam create-role --role-name UdacityFlaskDeployCBKubectlRole --assume-role-policy-document "$TRUST" --output text --query 'Role.Arn'
+
+
+echo '{ "Version": "2012-10-17", "Statement": [ { "Effect": "Allow", "Action": [ "eks:Describe*", "ssm:GetParameters" ], "Resource": "*" } ] }' > /tmp/iam-role-policy 
+
+ aws iam put-role-policy --role-name UdacityFlaskDeployCBKubectlRole --policy-name eks-describe --policy-document file:///tmp/iam-role-policy
+
+ kubectl get -n kube-system configmap/aws-auth -o yaml > /tmp/aws-auth-patch.yml
+
+- rolearn: arn:aws:iam::044501667047:role/UdacityFlaskDeployCBKubectlRole
+    username: build
+    groups:
+      - system:masters
+
+  kubectl patch configmap/aws-auth -n kube-system --patch "$(cat /tmp/aws-auth-patch.yml)"
 ```
