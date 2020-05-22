@@ -44,4 +44,6 @@ export TOKEN=`curl -d '{"email":"test@test.com","password":"password123"}' -H "C
 echo $TOKEN
 
 curl --request GET 'http://127.0.0.1:8080/contents' -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1OTEzOTEzODAsIm5iZiI6MTU5MDE4MTc4MCwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIn0.QJ2SYt2_DyZaJ7H-CsLLtu02UQHAuJ4K-bQPIiYuYUA" | jq .
+
+sudo docker run -p 80:8080 --env-file=app/env_file jwt-api-test
 ```
