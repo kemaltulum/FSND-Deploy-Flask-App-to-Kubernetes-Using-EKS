@@ -25,6 +25,8 @@ phases:
         - pytest app/test_main.py
   build:
     commands:
+      - docker --version
+      - systemctl start docker
       - docker build --tag $REPOSITORY_URI:$TAG .
 
   post_build:
