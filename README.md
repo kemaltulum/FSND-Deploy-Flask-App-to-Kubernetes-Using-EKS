@@ -46,7 +46,7 @@ echo $TOKEN
 
 curl --request GET 'http://127.0.0.1:8080/contents' -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1OTEzOTIzOTYsIm5iZiI6MTU5MDE4Mjc5NiwiZW1haWwiOiJ0ZXN0QHRlc3QuY29tIn0.5S5cXZ8fY2qyUiJ2gKQJE1B5PfDOCU29A9KBZOF40Zg" | jq .
 
-sudo docker run -p 80:8080 --env-file=app/env_file jwt-api-test
+sudo docker run -p 80:8080 --env-file=env_file jwt-api-test
 
 
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
